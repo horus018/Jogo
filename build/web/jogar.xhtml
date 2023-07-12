@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Jogar</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <p:outputLabel value="Seu palpite:"/>
+            <p:inputText value="#{beanSessao.numero}" size="4" required="true" requiredMessage="Informe um número entre 1 e 5">
+                <f:validateLongRange minimum="1" maximum="5"/>
+                <!--<f:validateLength minimum="1"/>--> 
+                <f:convertNumber integerOnly="true" />
+            </p:inputText><br/>
+
+            <p:selectOneRadio value="#{beanSessao.parOuImpar}">
+                <f:selectItem itemValue="#{'P'}" itemLabel="Par"/>
+                <f:selectItem itemValue="#{'I'}" itemLabel="Ìmpar"/>
+            </p:selectOneRadio>
+            <!--esses dois pontos antes do id é pra encontrar elementos na raiz do DOM nao somente no mesmo nivel de hierarquia-->
+            <p:commandButton value="Jogar" action="#{beanSessao.jogar}" update=":pnlResultado :mensagens"/> 
+            <!--o prime faces é baseada em ajax ent ou vc usa ajax="false" pra nao atualizar ou pega algum id pra atualizar a tela sempre-->
+        </h:form>
+        
+        <h:panelGroup layout="block" id="pnlResultado">
+            <h:outputText value="Jogos = #{beanSessao.jogador.jogos}" /><br/>
+            <h:outputText value="Vitórias: #{beanSessao.jogador.vitorias}" />
+            <p:dataTable value="#{beanSessao.jogadas}" var="jog" rendered="#{not empty beanSessao.jogadas}">
+                <p:column headerText="Sua Jogada">
+                    <p:outputLabel value="#{jog.numJogador}"/>
+                </p:column>
+                <p:column headerText="Sua Jogada">
+                    <p:outputLabel value="#{jog.numComputador}"/>
+                </p:column>
+                <p:column headerText="Resultado">
+                    <p:outputLabel value="VITÒRIA" rendered="#{jog.ganhador() eq 'J'}"/>
+                    <p:outputLabel value="DERROTA" rendered="#{jog.ganhador() eq 'C'}"/>
+                </p:column>
+            </p:dataTable>
+            <h:form>
+                <p:commandButton action="#{beanSessao.limpar}" value="Limpar jogadas e estatísticas" update=":pnlResultado"/>
+            </h:form>
+        </h:panelGroup>
+        <p:growl id="mensagens" showSummary="" showDetail="true"/>
+    </h:body>
+</html>
+
